@@ -1,14 +1,15 @@
-# 'base.py'
-# content; The App/Frame/Panel classes.
-# author; Roch schanen
-# created; 2020 Mars 21
-# repository; https://github.com/RochSchanen/rochpygui
+# base.py
+# content: define the App/Frame/Panel classes
+# created: 2020 03 21
+# modifed:
+# modification:
+# author: Roch Schanen
+# comment: https://github.com/RochSchanen/pyvigi_dev
 
 # wxpython: https://www.wxpython.org/
 import wx
 
-# todo: should I use "BufferedPaintDC"
-#       instead of "DCPaint" at (1)
+# (1) todo : use "BufferedPaintDC" instead of "DCPaint" ?
 
 # simple Panel class
 class _basePanel(wx.Panel):
@@ -33,7 +34,7 @@ class _basePanel(wx.Panel):
     def _OnPaint(self, event):
         # redraw if BackgroundBitmap is defined
         if self.BackgroundBitmap: 
-            dc = wx.PaintDC(self) # (1)
+            dc = wx.PaintDC(self)                               # (1)
             dc.DrawBitmap(self.BackgroundBitmap, 0, 0)
         return
 
@@ -103,16 +104,10 @@ class App(wx.App):
     # def __del__(self):
     #     return
 
-###########################################################
+if __name__ == "__main__":
 
-# minimal sample code to create an user Application
-
-# from base import *
-
-# class myApp(App):
-
-#     def Start(self):
-#         # code here
-#         return
-
-# myApp().MainLoop()
+    print("file: base.py (from pyvigi package)")
+    print("content: define the App/Frame/Panel classes")
+    print("created: 2020 03 21")
+    print("author: Roch Schanen")
+    print("comment:")
