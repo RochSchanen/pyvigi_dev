@@ -14,14 +14,13 @@ pyvigi_dev            		# development directory
 	LICENCE                 # licence file (MIT)
 	dist                    # distribution directory (auto generated)
 		pyvigi-0.0.1.tar.gz # the distribution in archive form
-	pyvigi.egg-info         # distribution information directory (auto)
+	pyvigi.egg-info         # distribution information directory (auto generated)
 		dependency_links.txt
 		PKG-INFO
 		SOURCES.txt
 		top_level.txt
 	setup.py                # setup.py file to build the package
-	t000.py                 # test package file
-
+	t000.py                 # test package after installation
 
 -----
 
@@ -131,3 +130,111 @@ Uploading pyvigi-0.0.1.tar.gz
 View at:
 https://pypi.org/project/pyvigi/0.0.1/
 
+-----
+
+locally re-install package after alteration
+create a quick script "re_install_pyvigi.py"
+with content:
+
+#!/bin/bash
+pip3 uninstall pyvigi
+pip3 install .
+
+-----
+
+update content of __init__.py:
+
+def version():
+	print("pyvigi version 0.0.2")
+
+-----
+
+add base.py
+
+	hidden classes:
+	
+		- _basePanel
+			(parent)
+	
+		- _baseFrm
+			()
+
+	classes:
+
+		- App
+			()
+			Start()
+			MainLoop()
+
+	todo: check whether "BufferedPaintDC" or "DCPaint"
+		should be used. Documentation required.
+		condition: platform independence
+
+-----
+
+add theme.py
+
+	classes:
+	
+		- Pnglib
+			()
+			...
+
+add display.py
+
+	classes:
+	
+		- Display
+			(parent, pnglib, names)
+			SetValue()
+			GetValue()
+        	parent
+			names
+        	pngs
+	        status = 0
+	        _onEraseBackground(event)
+	        _onPaint(event)
+
+add buttons.py
+
+	hidden classes:
+	
+		- _btn
+			(parent, pnglib, names)
+			SetValue()
+			GetValue()
+        	parent
+			names
+        	pngs
+	        status = 0
+	        _onEraseBackground(event)
+	        _onPaint(event)
+			BindEvent(handler)
+			SendEvent()
+	        radio = None
+	        ctr   = None
+	        evt   = None
+			_start()
+			_clear()
+			_onMouseDown(event)
+
+	classes:
+	
+		- PushRelease
+			(parent, pnglib, names)
+			SetValue()
+			GetValue()
+        	parent
+			names
+        	pngs
+	        status = 0
+	        _onEraseBackground(event)
+	        _onPaint(event)
+			BindEvent(handler)
+			SendEvent()
+	        radio = None
+	        ctr   = None
+	        evt   = None
+			_start()
+			_clear()
+			_onMouseDown(event)

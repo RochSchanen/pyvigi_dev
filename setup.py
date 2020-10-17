@@ -1,3 +1,11 @@
+# file: setup.py
+# content: setup file for pyvigi package
+# created: 2020 septemeber 27 Sunday
+# modified:
+# modification:
+# author: roch schanen
+# comment:
+
 import setuptools
 
 with open("README.md", "r") as fh:

@@ -1,19 +1,35 @@
-# base.py
-# content: define the App/Frame/Panel classes
+#!/usr/bin/python3
+# file: base.py
+# content: define the App class
 # created: 2020 03 21
-# modifed:
+# modified:
 # modification:
 # author: Roch Schanen
-# comment: https://github.com/RochSchanen/pyvigi_dev
+# comment:
+# repository: https://github.com/RochSchanen/pyvigi_dev
 
 # wxpython: https://www.wxpython.org/
 import wx
 
-# (1) todo : use "BufferedPaintDC" instead of "DCPaint" ?
+"""
+    simplified graphic interface mini library:
+    
+    On instantiating an "App" object, a frame is
+    automatically created and a panel container
+    too.
+    
+    The "BackgroundBitmap" variable is used to
+    paint the panel background on refresh if
+    the object is referenced to a bitmap object.
+
+    The "BackgroundBitmap" is also used as a canvas
+    by the layout class for drawing decorum.
+
+"""
 
 # simple Panel class
 class _basePanel(wx.Panel):
-    # superseed the __init__ method
+    # super-seed the __init__ method
     def __init__(self, parent):
         # call parent class __init__()
         wx.Panel.__init__(
@@ -31,6 +47,7 @@ class _basePanel(wx.Panel):
         # done
         return
 
+    # "BufferedPaintDC" or "DCPaint" : documentation required
     def _OnPaint(self, event):
         # redraw if BackgroundBitmap is defined
         if self.BackgroundBitmap: 
@@ -40,7 +57,7 @@ class _basePanel(wx.Panel):
 
 # simple Frame class
 class _baseFrm(wx.Frame):
-    # superseed the __init__ method
+    # super-seed the __init__ method
     def __init__(self):
         # call parent class __init__()
         wx.Frame.__init__(
@@ -59,9 +76,9 @@ class _baseFrm(wx.Frame):
         # done
         return
 
-# set _ESCAPE = True to allow the ESCAPE key
-#  when developping projects. The default is:
-_ESCAPE = False
+# Set _ESCAPE = True allows the ESCAPE key
+# to force the application to exit (debugging).
+_ESCAPE = True
 
 # simple App class
 class App(wx.App):
@@ -86,12 +103,14 @@ class App(wx.App):
         # done
         return True
 
-    # User's code:
     def Start(self):
-        # Superseeded Start method
+        # here is the user's start up code
         pass
 
-    # Exit on Esc: Debugging/Development stage
+    # catch the ESCAPE key and exit the app
+    # only if the _ESCAPE flag is set. This is
+    # defined for development purposes and can
+    # be removed or improved at later time.
     def _OnKeyDown(self, event):
         key = event.GetKeyCode()
         if _ESCAPE:
@@ -107,7 +126,7 @@ class App(wx.App):
 if __name__ == "__main__":
 
     print("file: base.py (from pyvigi package)")
-    print("content: define the App/Frame/Panel classes")
+    print("content: define the App class")
     print("created: 2020 03 21")
     print("author: Roch Schanen")
     print("comment:")
