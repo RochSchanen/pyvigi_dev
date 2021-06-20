@@ -10,9 +10,9 @@
 # wxpython: https://www.wxpython.org/
 import wx
 
-from theme   import *
-from layout  import *
-from display import *
+# from theme   import *
+# from layout  import *
+# from display import *
 
 class Control(wx.Control):
     # superseed __init__()

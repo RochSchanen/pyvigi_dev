@@ -1,0 +1,40 @@
+0, 0, 8, 2, 20, 20, 1, 1, red, off
+0, 0, 8, 2, 20, 20, 2, 1, red, on
+
+0, 0, 8, 2, 20, 20, 3, 1, green, off
+0, 0, 8, 2, 20, 20, 4, 1, green, on
+
+0, 0, 8, 2, 20, 20, 5, 1, blue, off
+0, 0, 8, 2, 20, 20, 6, 1, blue, on
+
+0, 0, 8, 2, 20, 20, 1, 2, yellow, off
+0, 0, 8, 2, 20, 20, 2, 2, yellow, on
+
+0, 0, 8, 2, 20, 20, 3, 2, white, off
+0, 0, 8, 2, 20, 20, 4, 2, white, on
+
+# libraries definition file. One image per line
+# gives the image geometry and the images tags:
+# offset, grid, size, position, image tags
+
+# a combination of tags selects a list of images
+# that will constitute a library. This should help
+# constitute a micro data base for the image file.
+# the search tags collects the images, the remaining
+# tags define the image name within that collection.
+
+# for example: use the 'blue' search tag to define
+# the following collection:
+# image: (0, 0, 8, 2, 20, 20, 5, 1) with tag name 'off'
+# image: (0, 0, 8, 2, 20, 20, 6, 1) with tag name 'on'
+
+# another example: use the 'on' search tag to define
+# the following collection:
+# image: (0, 0, 8, 2, 20, 20, 2, 1) with tag name 'red'
+# image: (0, 0, 8, 2, 20, 20, 4, 1) with tag name 'green'
+# image: (0, 0, 8, 2, 20, 20, 6, 1) with tag name 'blue'
+# image: (0, 0, 8, 2, 20, 20, 2, 2) with tag name 'yellow'
+# image: (0, 0, 8, 2, 20, 20, 4, 2) with tag name 'white'
+
+# This method was chosen to keep a large flexibility.
+# This should help a user to define its own libraries.

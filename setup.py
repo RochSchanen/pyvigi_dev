@@ -16,7 +16,7 @@ setuptools.setup(
     version="0.0.2",
     author="Roch Schanen",
     author_email="r.schanen@lancaster.ac.uk",
-    description="a PYthon Vitual Instrument Graphic Interface",
+    description="PYthon Vitual Instrument Graphic Interface",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/RochSchanen/pyvigi_dev",
@@ -29,3 +29,12 @@ setuptools.setup(
     install_requires=['wxpython'],
     python_requires='>=3.8'
 )
+
+
+# access to ressources
+
+# import os
+# this_dir, this_filename = os.path.split(__file__)
+# DATA_PATH = os.path.join(this_dir, "data", "data.txt")
+# print open(DATA_PATH).read()
+

@@ -174,11 +174,10 @@ add base.py
 
 add theme.py
 
-	classes:
-	
-		- Pnglib
-			()
-			...
+	functions:
+
+		- imageCollect(name, filter1, filter2, ...)
+		- imageSelect(images, filer1, ..., [filterlist])
 
 add display.py
 

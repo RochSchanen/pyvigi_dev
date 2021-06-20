@@ -8,59 +8,70 @@
 # website: https://github.com/RochSchanen/
 # comment:
 
-# todo: add the led display here
-# todo: add the wheel display here
-# todo: make the selection of the control
-# images using simple names
-
 # wxpython: https://www.wxpython.org/
-import wx
 
-# from theme import *
+from wx import Control              as wxControl
 
-class Pngdisplay(wx.Control):
+from wx import ID_ANY               as wxID_ANY
+from wx import DefaultPosition      as wxDefaultPosition
+from wx import DefaultSize          as wxDefaultSize
+from wx import NO_BORDER            as wxNO_BORDER
+from wx import DefaultValidator     as wxDefaultValidator
+
+from wx import Bitmap               as wxBitmap
+from wx import BufferedPaintDC      as wxBufferedPaintDC
+
+from wx import EVT_ERASE_BACKGROUND as wxEVT_ERASE_BACKGROUND
+from wx import EVT_PAINT            as wxEVT_PAINT
+
+class bitmapControl(wxControl):
 
     def __init__(
         self,
         parent,
-        pnglib,
-        names):
+        images,
+        names = None):
 
         # call parent __init__()
-        wx.Control.__init__(
+        wxControl.__init__(
             self,
             parent      = parent,
-            id          = wx.ID_ANY,
-            pos         = wx.DefaultPosition,
-            size        = wx.DefaultSize,
-            style       = wx.NO_BORDER,
-            validator   = wx.DefaultValidator,
+            id          = wxID_ANY,
+            pos         = wxDefaultPosition,
+            size        = wxDefaultSize,
+            style       = wxNO_BORDER,
+            validator   = wxDefaultValidator,
             name        = "")
 
         # PARAMETERS
         self.parent = parent
 
-        # the set of images is defined by a name list
-        self.names  = names
+        # single image:
+        if  isinstance(images, wxBitmap):
+            self.images = [images]
+            if isinstance(names, str):
+                self.names = [names]
 
-        # load the whole set of images:
-        self.pngs   = pnglib.Get(names)
+        # list of images
+        elif isinstance(images, list):
+            self.images = images
+            self.names = names
 
-        # LOCAL variables
+        # dictionary images
+        else:
+            self.images = images.Values()
+            self.names  = images.Keys()
 
         # status is an index or a name
         self.status = 0
 
         # get png size from first image
-        w, h = self.pngs[self.status].GetSize()
+        w, h = self.images[self.status].GetSize()
         self.SetSize((w, h))
 
-        # set background color
-        # self.SetBackgroundColour(BackgroundColour)
-
         # BINDINGS
-        self.Bind(wx.EVT_ERASE_BACKGROUND, self._onEraseBackground)
-        self.Bind(wx.EVT_PAINT, self._onPaint)
+        self.Bind(wxEVT_ERASE_BACKGROUND, self._onEraseBackground)
+        self.Bind(wxEVT_PAINT, self._onPaint)
 
         # done
         return
@@ -73,8 +84,8 @@ class Pngdisplay(wx.Control):
         v = self.status
         if isinstance(v, int): n = v
         if isinstance(v, str): n = self.names.index(v)
-        dc = wx.BufferedPaintDC(self)
-        dc.DrawBitmap(self.pngs[n], 0, 0)
+        dc = wxBufferedPaintDC(self)
+        dc.DrawBitmap(self.images[n], 0, 0)
         return
 
     def SetValue(self, Value):
@@ -84,26 +95,6 @@ class Pngdisplay(wx.Control):
 
     def GetValue(self):
         return self.status
-
-# class Text(wx.StaticText):
-# """
-#     comment
-# """
-#     def __init__(self, parent, text):
-
-#         wx.StaticText.__init__(self,
-#             parent = parent,
-#             label  = text,
-#             id     = wx.ID_ANY,
-#             pos    = wx.DefaultPosition,
-#             size   = wx.DefaultSize,
-#             style  = wx.NO_BORDER,
-#             name   = wx.TextCtrlNameStr)
-
-#         self.SetForegroundColour(TextColour)
-#         self.SetBackgroundColour(BackgroundColour)
-
-#         return
 
 if __name__ == "__main__":
 
