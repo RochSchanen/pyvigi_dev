@@ -8,20 +8,18 @@
 # website: https://github.com/RochSchanen/
 # comment:
 
-# to do: inlcude more case in the argument list
+"""
 
-# The role of imageCollect is to collect a list
-# of references to the images found in a png file
-# and defined in the png.txt file
+    The role of imageCollect is to collect a list
+    of references to all the images found in a png
+    file. The list is defined in the png.txt file.
+    (filtering can be applied)
 
-# the role of imageSelect is to select from the image
-# collection only the images that are necessary for
-# a specific object. this selection is performed by
-# building a list a pointer to the images
+    The role of imageSelect is to select from the image
+    collection a subset of images (by using keywords).
+    The selection is a list of pointers to the images
 
-# to revise: does the collection need to be filled
-# in parts as more images get requested: the goal
-# is to limit the memory usage of applications.
+"""
 
 # wxpython: https://www.wxpython.org/
 from wx import Bitmap          as wxBitmap
@@ -34,96 +32,125 @@ from sys import path as syspath
 # os.path
 from os.path import isfile as osisfile
 
-# path to application
+# get path to main application
+
 _APP_PATH = syspath[0]
 
-# list of paths to resource folders
-# the last path added has precedence: this way,
-# a user can easily add his own config files
+# create default list of paths to the resource folders
+# the last path added has precedence on the previous ones.
+# this allow a user to easily add his own ressource files.
+
 _PATHS = [
     f'{_APP_PATH}/resources',   # app resources directory
     f'{_APP_PATH}',             # app local directory
     ]
 
-# debug switch
+# debug flag
 _DEBUG = False
+
 def DEBUG(switch):
+
     if switch in ["ON", "On", "on", True, 1]:
         _DEBUG = True
+
     if switch in ["OFF", "Off", "off", False, 0]:
         _DEBUG = False  
+
     if _DEBUG:
-        print(f"DEUBUG switch is on")
+        print(f"_DEBUG flag is on")
         print(f"_APP_PATH: {_APP_PATH}")
         print(f"_PATHS:")
         for p in _PATHS:
             print(f"{' ':3}{p}")
+    
+    #done 
     return
 
 # get a valid path
 def _findpath(path):
+    
+    # default
     filepath = None
+    
+    # the passed parameter as priority
+    # over the search results.
+
     if osisfile(path):
-        # the path points to a valid
-        # file name, use this path
         filepath = path
+    
     else:
-        # look for all paths pointing
-        # to a valid file name
-        # keep the last name found
-        # if no valid name is found
-        # the function returns "None"        
+
+        # look through all paths
+        # and update "filepath"
+        # anytime a valid path is
+        # found. Thus, the last
+        # path found will be the
+        # path returned. if no
+        # valid path is found the
+        # function returns "None".
+
         for p in _PATHS:
             fp = f"{p}/{path}" 
             if osisfile(fp):
                 filepath = fp
+
+    # done
     return filepath
 
 # collect a png list
 def _findpngs(name, *args):
 
-    # load definition file
+    # load the definition file
     f = open(_findpath(f'{name}.png.txt'))
     if not f: return None
     t = f.read()
     f.close()
 
-    # get lib definitions
+    # build library
     library = []
     for s in t.split('\n'):
         if not s: continue               # skip empty line
         if s.strip()[0] == '#': continue # skip commnent
         l = s.split(',')                 # parse at coma
+
         # extract values
         offset   = int(l[0]), int(l[1]) # offset values
         grid     = int(l[2]), int(l[3]) # grid values
         size     = int(l[4]), int(l[5]) # size values
         position = int(l[6]), int(l[7]) # position values
+
         # build tags list
         taglist = []
         for t in l[8:]:
             taglist.append(t.strip())
+
         # group geometric parameters
         geometry = offset, grid, size, position
+
         # record all parameters
         library.append((geometry, taglist))
 
-    # collect pngs using taglist as filter
+    # collect pngs using the taglist as filter
     collection = []
     for i in library:
         geometry, taglist = i
+
         # filter
         valid = True
         for a in args:
             if a not in taglist:
                 valid = False
+
         # add item to collection
         if valid:
+
             # remove filter tags from taglist
             for a in args:
                 taglist.remove(a)
+
             # collect
             collection.append((geometry, taglist))
+
     # done
     return collection
 
@@ -166,7 +193,7 @@ def imageCollect(name, *args):
         y = (n-1)*Q + (Q-h)/2 + Y
         
         # set clipping geometry
-        Clip = wxRect(x, y, w, h)
+        Clip = wxRect(int(x), int(y), w, h)
         
         # clip and record
         images.append(bm.GetSubBitmap(Clip))

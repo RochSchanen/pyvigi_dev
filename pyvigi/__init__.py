@@ -7,4 +7,4 @@
 # author: roch schanen
 # comment:
 
-version = "0.0.2"
+version = "0.0.4"

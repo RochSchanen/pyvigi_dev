@@ -2,8 +2,8 @@
 # file: buttons.py
 # content:
 # created: 2020 April 03
-# modified:
-# modification:
+# modified: 2022 August 22
+# modification: use tools module
 # author: roch schanen
 # website: https://github.com/RochSchanen/
 # comment:
@@ -170,7 +170,7 @@ class Switch(_btn):
         self.Refresh()
         return
 
-
+# #################################################### WHEEL
 
 class Wheel(bitmapControl):
 
@@ -301,8 +301,11 @@ class Wheel(bitmapControl):
 
 if __name__ == "__main__":
 
-    print("file: buttons.py (from pyvigi package)")
-    print("content: ")
-    print("created: 2020 04 03")
-    print("author: Roch Schanen")
-    print("comment:")
+    from pyvigi.tools import header
+    header()
+
+    from sys import version
+    print(f"run Python version {version.split(' ')[0]}")
+
+    from pyvigi import version
+    print(f"using pyvigi version {version}")
