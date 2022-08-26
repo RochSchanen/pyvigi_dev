@@ -8,56 +8,70 @@
 # website: https://github.com/RochSchanen/
 # comment:
 
-# to do: !!! add the full wheel control here
-# (periodic or fixed boundaries)
-# to do: if event.Skip() is really necessary
-# then include it by default
-# to do: add SetValue() to Radio, Switch, etc...
-# to do: change self.evt to local evt.
-# it is only used once to bind event object
+# constants, methods and classes are imported individually
+# this allows to identify clearly the packages usage
 
-# wxpython: https://www.wxpython.org/
-import wx
-import wx.lib.newevent
+# from wxpython: https://www.wxpython.org/
 
+# wx event constants
+from wx import PostEvent            as wxPostEvent
+from wx import EVT_LEFT_DOWN        as wxEVT_LEFT_DOWN
+from wx import EVT_LEFT_UP          as wxEVT_LEFT_UP
+from wx import EVT_LEFT_DCLICK      as wxEVT_LEFT_DCLICK
+from wx import EVT_ENTER_WINDOW     as wxEVT_ENTER_WINDOW
+from wx import EVT_LEAVE_WINDOW     as wxEVT_LEAVE_WINDOW
+from wx import EVT_MOUSEWHEEL       as wxEVT_MOUSEWHEEL
+
+# wx event methods
+from wx.lib.newevent import NewEvent as wxNewEvent
+
+# from pyvigi:
 from pyvigi.display import bitmapControl
-# from controls import Control
-# from layout   import *
 
-#################################################### _BTN
+"""
+
+    this library is still under heavy development
+
+"""
 
 class _btn(bitmapControl):
-    # super-seed __init__()
+
     def __init__(
         self,
         parent,
         images,
         names = None):
-        # call parent __init__()
+
         bitmapControl.__init__(
             self,
             parent = parent,
             images = images,
             names  = names)
-        # LOCALS
+
+        # locals
         self.radio = None
         self.ctr   = None
         self.evt   = None
-        # BINDINGS
-        self.Bind(wx.EVT_LEFT_DOWN,   self._onMouseDown)
+
+        # bindings
+        self.Bind(wxEVT_LEFT_DOWN,   self._onMouseDown)
+
         # capture double clicks events as secondary single clicks
-        self.Bind(wx.EVT_LEFT_DCLICK, self._onMouseDown)
+        self.Bind(wxEVT_LEFT_DCLICK, self._onMouseDown)
+
         # call child _start() method
         self._start()
+
         # done
         return
 
-    # to super-seed
     def _start(self):
+        # to overload
         pass
 
-    # radio feature (to super-seed)
+    # radio feature
     def _clear(self):
+        # to overload
         pass
 
     # on EVT_LEFT_DOWN, the event.skip()
@@ -70,8 +84,8 @@ class _btn(bitmapControl):
     # Bind the event to the parent handler
     def BindEvent(self, handler):
         # "handler" is a reference to the handler method
-        # usually defined in the parent class
-        self.ctr, self.evt = wx.lib.newevent.NewEvent()
+        # usually defined by the parent class
+        self.ctr, self.evt = wxNewEvent()
         self.GetParent().Bind(self.evt, handler)
         return
 
@@ -79,7 +93,7 @@ class _btn(bitmapControl):
     def SendEvent(self):
         if self.ctr:
             event = self.ctr(caller=self, status=self.status)
-            wx.PostEvent(self.GetParent(), event)
+            wxPostEvent(self.GetParent(), event)
         return
 
 # #################################################### PUSHRELEASE
@@ -98,7 +112,7 @@ class _btn(bitmapControl):
 
 # to do: integration in a radio group
 
-class PushRelease(_btn):
+class Switch(_btn):
 
     def _onMouseDown(self, event):
         event.Skip() # allow focus events
@@ -124,12 +138,12 @@ class PushRelease(_btn):
 # 2 = off pressed
 # 3 = on  pressed
 
-class Switch(_btn):
+class LEDSwitch(_btn):
 
     def _start(self):
         self.lock = False
-        self.Bind(wx.EVT_LEFT_UP, self._onMouseUp)
-        self.Bind(wx.EVT_LEAVE_WINDOW, self._onMouseLeave)
+        self.Bind(wxEVT_LEFT_UP, self._onMouseUp)
+        self.Bind(wxEVT_LEAVE_WINDOW, self._onMouseLeave)
         return
 
     def _onMouseDown(self, event):
@@ -187,7 +201,6 @@ class Wheel(bitmapControl):
         else:
             self.hover = False
 
-        # call parent class __init__()
         bitmapControl.__init__(
             self,
             parent = parent,
@@ -206,9 +219,9 @@ class Wheel(bitmapControl):
             self.n >>= 1 
         
         # BINDINGS
-        self.Bind(wx.EVT_ENTER_WINDOW, self._onMouseEnter)
-        self.Bind(wx.EVT_LEAVE_WINDOW, self._onMouseLeave)
-        self.Bind(wx.EVT_MOUSEWHEEL,   self._onMouseWheel)
+        self.Bind(wxEVT_ENTER_WINDOW, self._onMouseEnter)
+        self.Bind(wxEVT_LEAVE_WINDOW, self._onMouseLeave)
+        self.Bind(wxEVT_MOUSEWHEEL,   self._onMouseWheel)
         return
 
     def _onMouseEnter(self, event):
@@ -287,7 +300,7 @@ class Wheel(bitmapControl):
     def BindEvent(self, handler):
         # "handler" is a reference to the handler method
         # defined in the parent class
-        self.ctr, self.evt = wx.lib.newevent.NewEvent()
+        self.ctr, self.evt = wxNewEvent()
         self.GetParent().Bind(self.evt, handler)
         return
 
@@ -296,7 +309,7 @@ class Wheel(bitmapControl):
     def SendEvent(self):
         if self.ctr:
             event = self.ctr(caller=self, status=self.status)
-            wx.PostEvent(self.GetParent(), event)
+            wxPostEvent(self.GetParent(), event)
         return
 
 if __name__ == "__main__":
@@ -309,3 +322,34 @@ if __name__ == "__main__":
 
     from pyvigi import version
     print(f"using pyvigi version {version}")
+
+    from pyvigi.base import app
+
+    from pyvigi.theme import imageCollect
+    from pyvigi.theme import imageSelect
+   
+    # derive a new class from app
+    class myapp(app):
+
+        def Start(self):
+
+            # manually setup the background image of myapp
+            PANELS = imageCollect("panels")
+            self.Panel.BackgroundBitmap = imageSelect(PANELS, "medium")[0]
+
+            # setup switches
+            SWITCHES = imageCollect("switches")
+            
+            # add green led switch to the panel
+            self.l = LEDSwitch(self.Panel, imageSelect(SWITCHES, "green"))
+            w, h = self.l.GetSize()
+            self.l.SetPosition((int(256/2-w/2), int(256/2-h/2)))
+
+            # done
+            return
+    
+    # instanciate myapp
+    m = myapp()
+
+    # run myapp
+    m.Run()

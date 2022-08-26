@@ -1,71 +1,110 @@
-# 'controls.py'
-# content; The Control class.
-# author; Roch schanen
-# created; 2020 April 03
-# repository; https://github.com/RochSchanen/rochpygui
-
-# todo: check whether the wx.Control class should be raplaced by panels
-# todo: change self.evt to local evt. it is only used once to bind event object
+#!/usr/bin/python3
+# file: controls.py
+# content: Control class definition
+# created: 2020 April 03
+# modified: 2022 August 22
+# modification: use tools module
+# author: Roch Schanen
+# repository: https://github.com/RochSchanen/pyvigi_dev
+# comment:
 
 # wxpython: https://www.wxpython.org/
-import wx
 
-# from theme   import *
-# from layout  import *
-# from display import *
+# constants, methods and classes are imported individually
+# this allows to identify clearly the package usage
 
-class Control(wx.Control):
-    # superseed __init__()
+# classes
+from wx import Control              as wxControl
+
+# wx classes default constants
+from wx import ID_ANY               as wxID_ANY
+from wx import DefaultPosition      as wxDefaultPosition
+from wx import DefaultSize          as wxDefaultSize
+from wx import NO_BORDER            as wxNO_BORDER
+from wx import DefaultValidator     as wxDefaultValidator
+
+# wx bitmap methods
+from wx import BufferedPaintDC      as wxBufferedPaintDC
+
+# wx event constants
+from wx import EVT_ERASE_BACKGROUND as wxEVT_ERASE_BACKGROUND
+from wx import EVT_PAINT            as wxEVT_PAINT
+
+# wx event methods
+from wx import wxPostEvent
+from wx.lib.newevent import wxNewEvent
+
+class Control(wxControl):
+
     def __init__(
         self,
         parent):
-        # call parent __init__()
-        wx.Control.__init__(
+
+        wxControl.__init__(
             self,
             parent      = parent,
-            id          = wx.ID_ANY,
-            pos         = wx.DefaultPosition,
-            size        = wx.DefaultSize,
-            style       = wx.NO_BORDER,
-            validator   = wx.DefaultValidator,
+            id          = wxID_ANY,
+            pos         = wxDefaultPosition,
+            size        = wxDefaultSize,
+            style       = wxNO_BORDER,
+            validator   = wxDefaultValidator,
             name        = "")
-        # PARAMETERS
+
+        # parameters
         self.parent = parent
-        # LOCAL DEFAULTS
-        self.status = 0
+
+        # status is the value returned
+        # by SendEvent to owner class
+        self.status = None
+        
+        # When defined the BackgroundBitmap
+        # is automatically re-drawn on any
+        # paint event
         self.BackgroundBitmap = None
+        
+        # "self.ctr" is used to build the event
+        # object that needs to be returned to
+        # the owner. "self.evt" may not need to
+        # be defined globally...
         self.ctr, self.evt = None, None
-        # DEFAULT BACKGROUND
-        self.SetBackgroundColour(BackgroundColour)
-        # BINDINGS
-        self.Bind(wx.EVT_ERASE_BACKGROUND,self._onEraseBackground)
-        self.Bind(wx.EVT_PAINT,self._onPaint)
+        
+        # set background (do i need this?)
+        # self.SetBackgroundColour(BackgroundColour)
+        
+        # bindings
+        self.Bind(wxEVT_ERASE_BACKGROUND,self._onEraseBackground)
+        self.Bind(wxEVT_PAINT,self._onPaint)
+        
         # user constructor
         self.Start()
+        
         # done
         return
 
-    # to be superseeded
+    # to be overloaded by user's code
     def Start(self):
-        return
+        pass
 
     def _onEraseBackground(self, event):
-        # no operation (reduced flicker)
-        pass 
+        # force bypass to avoid flicker
+        pass
 
     def _onPaint(self, event):
         if self.BackgroundBitmap:
-            dc = wx.BufferedPaintDC(self)
+            dc = wxBufferedPaintDC(self)
             dc.DrawBitmap(self.BackgroundBitmap, 0, 0)
         return
 
     def BindEvent(self, handler):
-        self.ctr, self.evt = wx.lib.newevent.NewEvent()
+        self.ctr, self.evt = wxNewEvent()
         self.GetParent().Bind(self.evt, handler)
         return
+        # "self.evt" is only used once in the "BindEvent" method
+        # can it then be defined only locally?
 
     def SendEvent(self):
         if self.ctr:
             event = self.ctr(caller=self, status = self.status)
-            wx.PostEvent(self.GetParent(), event)
+            wxPostEvent(self.GetParent(), event)
         return
+ 

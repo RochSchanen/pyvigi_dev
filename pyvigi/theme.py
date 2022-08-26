@@ -8,6 +8,20 @@
 # website: https://github.com/RochSchanen/
 # comment:
 
+# constants, methods and classes are imported individually
+# this allows to identify clearly the packages usage
+
+# from standard packages:
+from sys import path                    as syspath
+from os.path import isfile              as osisfile
+
+# from wxpython: https://www.wxpython.org/
+
+# wx bitmap methods
+from wx import Bitmap                   as wxBitmap
+from wx import BITMAP_TYPE_PNG          as wxBITMAP_TYPE_PNG
+from wx import Rect                     as wxRect
+
 """
 
     The role of imageCollect is to collect a list
@@ -19,31 +33,35 @@
     collection a subset of images (by using keywords).
     The selection is a list of pointers to the images
 
+    todo: add a method to set the app background image?
+
+    todo: add more examples to illustrate the functionaly
+    of the collection and selection methods.
+
+    todo: add resources within the package.
+
 """
 
-# wxpython: https://www.wxpython.org/
-from wx import Bitmap          as wxBitmap
-from wx import BITMAP_TYPE_PNG as wxBITMAP_TYPE_PNG
-from wx import Rect            as wxRect
-
-# sys
-from sys import path as syspath
-
-# os.path
-from os.path import isfile as osisfile
-
-# get path to main application
+# Get path to main application:
 
 _APP_PATH = syspath[0]
 
-# create default list of paths to the resource folders
-# the last path added has precedence on the previous ones.
-# this allow a user to easily add his own ressource files.
+# Resources are searched first
+# in the sub-folder "resources"
+# that may or not be present in
+# the application folder. secondly
+# resources are searched in the
+# application folder itself. more
+# path can be added to the list by
+# the user.
 
 _PATHS = [
     f'{_APP_PATH}/resources',   # app resources directory
     f'{_APP_PATH}',             # app local directory
     ]
+
+# the last path added has precedence on the previous ones.
+# this allow a user to easily add his own ressource files.
 
 # debug flag
 _DEBUG = False
@@ -216,7 +234,9 @@ def imageSelect(collection, *args):
     # possible optional arguments:
     # None (all images are returned)
     # tags (images returned are filtered)
-    # tags and a taglist (images are filtered and ordered)
+    # tags and a taglist (images are
+    # filtered and ordered using the
+    # taglist)
 
     subCollection = []
 
@@ -259,18 +279,37 @@ def imageSelect(collection, *args):
     # done
     return images
 
-# -------------------------------------------------------------
-
 if __name__ == "__main__":
 
-    import sys
+    from pyvigi.tools import header
+    header()
 
-    print(f"file: {_APP_PATH}/theme.py")
-    print("from package: 'pyvigi'")
-    print("content:")
-    print("created: 2020 04 05")
-    print("author: Roch Schanen")
-    print("comment:")
-    print("run Python3:" + sys.version)
+    from sys import version
+    print(f"run Python version {version.split(' ')[0]}")
 
-    # list available ressources when direclty called
+    from pyvigi import version
+    print(f"using pyvigi version {version}")
+
+    # DEBUG("True")
+
+    from pyvigi.base import app
+
+    # derive a new class from app
+    class myapp(app):
+
+        def Start(self):
+            # collect images from "Panels.png"
+            IC = imageCollect("panels")
+            # select image list from the collection
+            # here we obtain a list of one image
+            IS = imageSelect(IC, "large")
+            # manually setup the background image of myapp
+            self.Panel.BackgroundBitmap = IS[0]
+            # done
+            return
+    
+    # instanciate myapp
+    m = myapp()
+
+    # run myapp
+    m.Run()

@@ -2,14 +2,41 @@
 # file: base.py
 # content: App class definition
 # created: 2020 March 21
-# modified: 2022 August 22
+# modified: 2022 August 24
 # modification: use tools module
 # author: Roch Schanen
 # repository: https://github.com/RochSchanen/pyvigi_dev
 # comment:
 
-# wxpython: https://www.wxpython.org/
-import wx
+# constants, methods and classes are imported individually
+# this allows to identify clearly the packages usage
+
+# from wxpython: https://www.wxpython.org/
+
+# classes
+from wx import Panel                as wxPanel
+from wx import Frame                as wxFrame
+from wx import App                  as wxApp
+
+# wx classes default constants
+from wx import ID_ANY               as wxID_ANY
+from wx import DefaultPosition      as wxDefaultPosition
+from wx import DefaultSize          as wxDefaultSize
+from wx import NO_BORDER            as wxNO_BORDER
+from wx import DEFAULT_FRAME_STYLE  as wxDEFAULT_FRAME_STYLE
+from wx import RESIZE_BORDER        as wxRESIZE_BORDER
+from wx import MAXIMIZE_BOX         as wxMAXIMIZE_BOX
+
+# wx bitmap methods
+from wx import PaintDC as wxPaintDC
+
+# wx event constants
+from wx import EVT_PAINT            as wxEVT_PAINT
+from wx import EVT_KEY_DOWN         as wxEVT_KEY_DOWN
+from wx import WXK_ESCAPE           as wxWXK_ESCAPE
+
+# wx system
+from wx import Exit                 as wxExit
 
 """ 
     
@@ -19,34 +46,34 @@ import wx
     automatically created and a panel container
     too.
     
-    A "BackgroundBitmap" is created and used to
-    paint the panel background when "Refreshed".
+    A "BackgroundBitmap" is created and is used for
+    painting the panel background when "Refreshed".
 
     Importantly, the "BackgroundBitmap" is used
-    as a canvas by the layout class to draw the
-    App decors.
+    as a canvas for the layout class to draw the
+    App's decors.
 
 """
 
 # Quick Panel
-class _basePanel(wx.Panel):
+class _basePanel(wxPanel):
 
     def __init__(self, parent):
 
-        wx.Panel.__init__(
+        wxPanel.__init__(
             self,
             parent = parent,
-            id     = wx.ID_ANY,
-            pos    = wx.DefaultPosition,
-            size   = wx.DefaultSize,
-            style  = wx.NO_BORDER,
+            id     = wxID_ANY,
+            pos    = wxDefaultPosition,
+            size   = wxDefaultSize,
+            style  = wxNO_BORDER,
             name   = "")
 
         # BackgroundBitmaps are used to draw decors
         self.BackgroundBitmap = None
 
         # bind paint event
-        self.Bind(wx.EVT_PAINT, self._OnPaint)
+        self.Bind(wxEVT_PAINT, self._OnPaint)
 
         # done
         return
@@ -59,30 +86,32 @@ class _basePanel(wx.Panel):
             # "DCPaint" is used here.
             # maybe "BufferedPaintDC" should be used instead.
             # todo: explore documentation
-            dc = wx.PaintDC(self)
+            dc = wxPaintDC(self)
             dc.DrawBitmap(self.BackgroundBitmap, 0, 0)
 
         #done
         return
 
 # Quick Frame
-class _baseFrm(wx.Frame):
+class _baseFrm(wxFrame):
 
     def __init__(self):
 
-        wx.Frame.__init__(
+        wxFrame.__init__(
             self,
             parent = None,
-            id     = wx.ID_ANY,
+            id     = wxID_ANY,
             title  = "",
-            pos    = wx.DefaultPosition,
-            size   = wx.DefaultSize,
-            style  = wx.DEFAULT_FRAME_STYLE
-                    ^ wx.RESIZE_BORDER
-                    ^ wx.MAXIMIZE_BOX,
+            pos    = wxDefaultPosition,
+            size   = wxDefaultSize,
+            style  = wxDEFAULT_FRAME_STYLE
+                    ^ wxRESIZE_BORDER
+                    ^ wxMAXIMIZE_BOX,
             name   = "")
 
         # create the panel
+        # (by default the Panel should
+        # take the size of the Frame)
         self.Panel = _basePanel(self)
 
         # done
@@ -94,11 +123,11 @@ class _baseFrm(wx.Frame):
 _ESCAPE = True
 
 # Quick App
-class App(wx.App):
+class app(wxApp):
 
     def OnInit(self):
         # create reference to App
-        self.App = self
+        # self.App = self (most likely useless)
         # create and show Frame
         self.Frame = _baseFrm()     
         # create reference to Panel
@@ -110,16 +139,20 @@ class App(wx.App):
             w, h = self.Frame.Panel.BackgroundBitmap.GetSize()
             self.Frame.SetClientSize((w, h))
         # bind key events
-        self.Bind(wx.EVT_KEY_DOWN, self._OnKeyDown)
+        self.Bind(wxEVT_KEY_DOWN, self._OnKeyDown)
         # show the frame
         self.Frame.Show(True)
         # done
         return True
 
+    # Start() is to be overloaded by the user
     def Start(self):
-        # This has to be overloaded by the
         # user's start up code
         pass
+
+    def Run(self):
+        self.MainLoop()
+        return
 
     def _OnKeyDown(self, event):
         
@@ -131,8 +164,8 @@ class App(wx.App):
         # be removed at later time.
 
         if _ESCAPE:
-            if key == wx.WXK_ESCAPE:
-                wx.Exit()
+            if key == wxWXK_ESCAPE:
+                wxExit()
                 return
 
         event.Skip() # forward event
@@ -153,3 +186,6 @@ if __name__ == "__main__":
 
     from pyvigi import version
     print(f"using pyvigi version {version}")
+
+    a = app()
+    a.Run()

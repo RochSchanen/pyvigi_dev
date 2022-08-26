@@ -7,8 +7,7 @@
 # author: roch schanen
 # comment:
 
-
-# display header of main's script
+# display file header of main calling script
 
 def header():
 
