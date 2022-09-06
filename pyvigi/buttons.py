@@ -31,8 +31,13 @@ from pyvigi.display import bitmapControl
 """
 
     this library is still under heavy development
+    it is developed in concurence with the pylvinox panel
+    that should control and monitor the kelvinox box
 
 """
+
+# the _btn class is used as a base for the following buttons
+# (except for the wheel control that is directly based on the bitmapControl)
 
 class _btn(bitmapControl):
 
@@ -96,11 +101,10 @@ class _btn(bitmapControl):
             wxPostEvent(self.GetParent(), event)
         return
 
-# #################################################### PUSHRELEASE
+# #################################################### SWITCH
 
-# one push to set
-# one push to clear
-# an event is sent in either case
+# set and cleared alternatively on mouse down
+# an event is sent each time
 # there is no undo gesture
 #
 # png binary weight:
@@ -121,12 +125,11 @@ class Switch(_btn):
         self.SendEvent()
         return
 
-# #################################################### SWITCH
+# #################################################### LED SWITCH
 
-# send event when releasing
-# one push to set
-# one push to reset
-# cancellation gesture: leaving without release
+# set and cleared alternatively on mouse up
+# send a single event on release
+# there is a cancellation gesture: leaving the button without mouse release
 #
 # png binary weight:
 # 2^0 = 1 = on
@@ -185,6 +188,8 @@ class LEDSwitch(_btn):
         return
 
 # #################################################### WHEEL
+
+# a full explanation is necessary here
 
 class Wheel(bitmapControl):
 
@@ -267,7 +272,9 @@ class Wheel(bitmapControl):
         self.status = m
         # done
         self.SendEvent()
-        # self.Refresh()
+        # the caller should send a "self.Refresh()"
+        # after evaluating the new state that should
+        # be given to the wheel.
         return
 
     def SetRotation(self, Value):
@@ -336,18 +343,50 @@ if __name__ == "__main__":
             # manually setup the background image of myapp
             PANELS = imageCollect("panels")
             self.Panel.BackgroundBitmap = imageSelect(PANELS, "medium")[0]
+            W, H = self.Panel.BackgroundBitmap.GetSize()
 
-            # setup switches
             SWITCHES = imageCollect("switches")
-            
+
+            # add switch
+            self.p = Switch(self.Panel,
+                imageSelect(SWITCHES, "blank"))
+            w, h = self.p.GetSize()
+            x, y = (W+0*w)/2, (H-3*h)/2
+            self.p.SetPosition((int(x), int(y)))
+            self.p.BindEvent(self.updatePush)
+
             # add green led switch to the panel
-            self.l = LEDSwitch(self.Panel, imageSelect(SWITCHES, "green"))
-            w, h = self.l.GetSize()
-            self.l.SetPosition((int(256/2-w/2), int(256/2-h/2)))
+            self.l = LEDSwitch(self.Panel,
+                imageSelect(SWITCHES, "green"))
+            x, y = (W-3*w)/2, (H-0*h)/2
+            self.l.SetPosition((int(x), int(y)))
+            self.l.BindEvent(self.updateSwitch)
+
+            # add wheel to the panel
+            WHEEL = imageCollect("generator", "digit")
+            self.whl = Wheel(self.Panel, 
+                imageSelect(WHEEL, "normal"),
+                imageSelect(WHEEL, "hover"))
+            x, y = (W+3*w)/2, (H-0*h)/2
+            self.whl.SetPosition((int(x), int(y)))
+            self.whl.BindEvent(self.updateWheel)
 
             # done
             return
     
+        def updatePush(self, event):
+            print(["OFF", "ON"][event.caller.GetValue()])
+            return
+
+        def updateSwitch(self, event):
+            print(event.status)
+            return
+
+        def updateWheel(self, event):
+            print(event.caller.GetValue())
+            event.caller.Refresh()
+            return
+
     # instanciate myapp
     m = myapp()
 

@@ -1,0 +1,18 @@
+0, 0, 8, 2, 34, 34, 1, 1, released, blank
+0, 0, 8, 2, 34, 34, 2, 1, pressed,  blank
+
+0, 0, 8, 2, 34, 34, 1, 2, released, south
+0, 0, 8, 2, 34, 34, 2, 2, pressed,  south
+
+0, 0, 8, 2, 34, 34, 3, 2, released, east
+0, 0, 8, 2, 34, 34, 4, 2, pressed,  east
+
+0, 0, 8, 2, 34, 34, 5, 2, released, north
+0, 0, 8, 2, 34, 34, 6, 2, pressed,  north
+
+0, 0, 8, 2, 34, 34, 7, 2, released, west
+0, 0, 8, 2, 34, 34, 8, 2, pressed,  west
+
+# libraries definition file. One image per line
+# gives the image geometry and the images tags:
+# offset, grid, size, position, image tags

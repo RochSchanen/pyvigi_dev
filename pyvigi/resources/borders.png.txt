@@ -1,0 +1,44 @@
+0, 0, 2, 2, 64, 64, 1, 1, full, ridge
+0, 0, 2, 2, 64, 64, 1, 2, full, groove
+0, 0, 2, 2, 64, 64, 2, 1, full, outset
+0, 0, 2, 2, 64, 64, 2, 2, full, inset
+
+0, 0, 16, 16, 8, 8, 1, 1, ridge, tl
+0, 0, 16, 16, 8, 8, 1, 2, ridge, l
+0, 0, 16, 16, 8, 8, 1, 8, ridge, bl
+0, 0, 16, 16, 8, 8, 4, 8, ridge, b
+0, 0, 16, 16, 8, 8, 8, 8, ridge, br
+0, 0, 16, 16, 8, 8, 8, 4, ridge, r
+0, 0, 16, 16, 8, 8, 8, 1, ridge, tr
+0, 0, 16, 16, 8, 8, 4, 1, ridge, t
+
+0, 64, 16, 16, 8, 8, 1, 1, groove, tl
+0, 64, 16, 16, 8, 8, 1, 2, groove, l
+0, 64, 16, 16, 8, 8, 1, 8, groove, bl
+0, 64, 16, 16, 8, 8, 4, 8, groove, b
+0, 64, 16, 16, 8, 8, 8, 8, groove, br
+0, 64, 16, 16, 8, 8, 8, 4, groove, r
+0, 64, 16, 16, 8, 8, 8, 1, groove, tr
+0, 64, 16, 16, 8, 8, 4, 1, groove, t
+
+64, 0, 16, 16, 8, 8, 1, 1, ouset, tl
+64, 0, 16, 16, 8, 8, 1, 2, ouset, l
+64, 0, 16, 16, 8, 8, 1, 8, ouset, bl
+64, 0, 16, 16, 8, 8, 4, 8, ouset, b
+64, 0, 16, 16, 8, 8, 8, 8, ouset, br
+64, 0, 16, 16, 8, 8, 8, 4, ouset, r
+64, 0, 16, 16, 8, 8, 8, 1, ouset, tr
+64, 0, 16, 16, 8, 8, 4, 1, ouset, t
+
+64, 64, 16, 16, 8, 8, 1, 1, inset, tl
+64, 64, 16, 16, 8, 8, 1, 2, inset, l
+64, 64, 16, 16, 8, 8, 1, 8, inset, bl
+64, 64, 16, 16, 8, 8, 4, 8, inset, b
+64, 64, 16, 16, 8, 8, 8, 8, inset, br
+64, 64, 16, 16, 8, 8, 8, 4, inset, r
+64, 64, 16, 16, 8, 8, 8, 1, inset, tr
+64, 64, 16, 16, 8, 8, 4, 1, inset, t
+
+# libraries definition file. One image per line
+# gives the image geometry and the images tags:
+# offset, grid, size, position, image tags

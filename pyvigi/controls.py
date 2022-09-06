@@ -108,3 +108,6 @@ class Control(wxControl):
             wxPostEvent(self.GetParent(), event)
         return
  
+
+ # use the opportunity to incorporate the group feature
+ 

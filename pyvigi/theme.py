@@ -42,6 +42,8 @@ from wx import Rect                     as wxRect
 
 """
 
+############################################ PATHS
+
 # Get path to main application:
 
 _APP_PATH = syspath[0]
@@ -62,6 +64,9 @@ _PATHS = [
 
 # the last path added has precedence on the previous ones.
 # this allow a user to easily add his own ressource files.
+
+# the path selection, addition, substraction could
+# be implemented to choose one theme amongst multiple others
 
 # debug flag
 _DEBUG = False
@@ -114,6 +119,9 @@ def _findpath(path):
 
     # done
     return filepath
+
+
+############################################ COLLECT
 
 # collect a png list
 def _findpngs(name, *args):
@@ -229,6 +237,8 @@ def imageCollect(name, *args):
     # done
     return subCollection
 
+############################################ SELECT
+
 def imageSelect(collection, *args):
 
     # possible optional arguments:
@@ -278,6 +288,8 @@ def imageSelect(collection, *args):
 
     # done
     return images
+
+############################################ TEST
 
 if __name__ == "__main__":
 
