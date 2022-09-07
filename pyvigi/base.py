@@ -34,6 +34,7 @@ from wx import PaintDC as wxPaintDC
 from wx import EVT_PAINT            as wxEVT_PAINT
 from wx import EVT_KEY_DOWN         as wxEVT_KEY_DOWN
 from wx import WXK_ESCAPE           as wxWXK_ESCAPE
+from wx import EVT_ERASE_BACKGROUND as wxEVT_ERASE_BACKGROUND
 
 # wx system
 from wx import Exit                 as wxExit
@@ -73,10 +74,15 @@ class _basePanel(wxPanel):
         self.BackgroundBitmap = None
 
         # bind paint event
+        # self.Bind(wxEVT_ERASE_BACKGROUND, self._onEraseBackground)
         self.Bind(wxEVT_PAINT, self._OnPaint)
 
         # done
         return
+
+    def _onEraseBackground(self, event):
+        # force bypass to avoid flicker
+        pass
 
     def _OnPaint(self, event):
 
