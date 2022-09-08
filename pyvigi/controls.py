@@ -3,7 +3,7 @@
 # content: Control class definition
 # created: 2020 April 03
 # modified: 2022 August 22
-# modification: add scroller control
+# modification: add vScroll control
 # author: Roch Schanen
 # repository: https://github.com/RochSchanen/pyvigi_dev
 # comment:
@@ -13,8 +13,11 @@
 # constants, methods and classes are imported individually
 # this allows to identify clearly the package usage
 
-# classes
+# wx classes
 from wx import Control              as wxControl
+
+# wx methods
+from wx import GetMousePosition     as wxGetMousePosition
 
 # wx classes default constants
 from wx import ID_ANY               as wxID_ANY
@@ -29,6 +32,11 @@ from wx import BufferedPaintDC      as wxBufferedPaintDC
 # wx event constants
 from wx import EVT_ERASE_BACKGROUND as wxEVT_ERASE_BACKGROUND
 from wx import EVT_PAINT            as wxEVT_PAINT
+
+from wx import EVT_LEFT_DOWN    as wxEVT_LEFT_DOWN
+from wx import EVT_MOTION       as wxEVT_MOTION
+from wx import EVT_LEFT_UP      as wxEVT_LEFT_UP
+from wx import EVT_LEAVE_WINDOW as wxEVT_LEAVE_WINDOW
 
 # wx event methods
 from wx import PostEvent as wxPostEvent
@@ -111,6 +119,79 @@ class Control(wxControl):
             wxPostEvent(self.GetParent(), event)
         return
 
+class vScroll(Control):
+
+    def Start(self):
+        # control locked to mouse motion
+        self.lock = False
+        # get Panel
+        # setup scroll value boundaries
+        self.extr = 0, 0
+        # bind events
+        self.Bind(wxEVT_LEFT_DOWN,     self._LeftDown)
+        self.Bind(wxEVT_MOTION,        self._Motion)
+        self.Bind(wxEVT_LEFT_UP,       self._LeftUp)
+        self.Bind(wxEVT_LEAVE_WINDOW,  self._Leave)
+
+        # done
+        return
+
+    # this 
+    def SetFrameContainerHeight(self, height):
+        # get self size
+        w, h = self.GetSize()
+        # coerce
+        if height > h: height = h
+        # Parent is Panel
+        # Parent.Parent is Frame
+        self.Parent.Parent.SetClientSize((w, height))
+        # setup boundaries
+        self.extr = height - h, 0
+        # done
+        return
+
+    def _LeftDown(self, event):
+        # activate locking
+        self.lock = True  
+        # record initial control position      
+        self.spos = self.GetPosition()
+        # record initial mouse location
+        self.mpos = wxGetMousePosition()
+        # done
+        return
+
+    def _Motion(self, event):
+        # process only if locked
+        if self.lock:
+            # get initial locations
+            X, Y = self.mpos
+            P, Q = self.spos
+            # get current mouse position
+            x, y = wxGetMousePosition()
+            # compute new control position
+            p, q = P, Q + y-Y
+            # get extrema
+            MIN, MAX = self.extr
+            # coerce to constraints
+            if q < MIN: q = MIN
+            if q > MAX: q = MAX
+            # set new control position
+            self.SetPosition((p, q))
+        # done
+        return
+
+    def _LeftUp(self, event):
+        self._unlock(event)
+        return
+
+    def _Leave(self, event):
+        self._unlock(event)
+        return
+
+    def _unlock(self, event):
+        self.lock = False
+        return
+
 if __name__ == "__main__":
 
     from pyvigi.tools import header
@@ -122,90 +203,24 @@ if __name__ == "__main__":
     from pyvigi import version
     print(f"using pyvigi version {version}")
 
-    from wx import EVT_LEFT_DOWN    as wxEVT_LEFT_DOWN
-    from wx import EVT_MOTION       as wxEVT_MOTION
-    from wx import EVT_LEFT_UP      as wxEVT_LEFT_UP
-    from wx import EVT_LEAVE_WINDOW as wxEVT_LEAVE_WINDOW
-
-    from wx import GetMousePosition
-
-    class Scroller(Control):
-
-        def Start(self):
-            # control locked to mouse motion
-            self.lock = False
-            # extrema (min and max) scroll values
-            self.extr = -100, +100
-            # bind events
-            self.Bind(wxEVT_LEFT_DOWN,     self._LeftDown)
-            self.Bind(wxEVT_MOTION,        self._Motion)
-            self.Bind(wxEVT_LEFT_UP,       self._LeftUp)
-            self.Bind(wxEVT_LEAVE_WINDOW,  self._Leave)
-
-            print(self.GetPosition())
-            print(self.GetSize())
-
-            # done
-            return
-
-        def _LeftDown(self, event):
-            # activate locking
-            self.lock = True  
-            # record initial control position      
-            self.spos = self.GetPosition()
-            # record initial mouse location
-            self.mpos = GetMousePosition()
-            # done
-            return
-
-        def _Motion(self, event):
-            # process only if locked
-            if self.lock:
-                # get initial locations
-                X, Y = self.mpos
-                P, Q = self.spos
-                # get current mouse position
-                x, y = GetMousePosition()
-                # compute new control position
-                p, q = P, Q + y-Y
-                # get extrema
-                # pmin, pmax = self.extr
-                # coerce to constraints
-                # if p < pmin: p = pmin
-                # if p > pmax: p = pmax
-                # set new control position
-                self.SetPosition((p, q))
-            # done
-            return
-
-        def _LeftUp(self, event):
-            self._unlock(event)
-            return
-
-        def _Leave(self, event):
-            self._unlock(event)
-            return
-
-        def _unlock(self, event):
-            self.lock = False
-            return
 
     from pyvigi.base import app
     from pyvigi.theme import imageCollect
     from pyvigi.theme import imageSelect
 
+    # GetClientArea as wxGetClientArea
     class myapp(app):
 
         def Start(self):
 
-            PANELS = imageCollect("Panels")
+            v = vScroll(self.Panel)
+            v.SetBackground(imageCollect("bkgd"))
+            v.SetFrameContainerHeight(350)
 
-            s = Scroller(self.Panel)
-            s.SetBackground(imageSelect(PANELS, "large")[0])
-            
-            w, h = s.GetSize()
-            W, H = self.Panel.GetSize()
-            self.Panel.SetSize(w, H)
+            # Don't use any "Frame.Panel.BackgroundBitmap"
+            # when using the vscroll control. This would
+            # resize the Frame to the Panel bitmap instead
+            # of resizing to the vScroll bitmap.
 
             # done
             return
