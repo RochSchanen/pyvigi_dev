@@ -126,7 +126,7 @@ class vScroll(Control):
         # control locked to mouse motion
         self.lock = False
         # default rotation
-        self.rotation = 30
+        self.rotation = 50
         # setup scroll value boundaries
         self.extr = 0, 0
         # bind events

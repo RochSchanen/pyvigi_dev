@@ -297,7 +297,7 @@ class Wheel(bitmapControl):
 
     def GetValue(self):
         return self.status % self.n
-
+6
     def Reset(self):
         self.status = self.reset
         # self.Refresh()
