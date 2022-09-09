@@ -37,6 +37,7 @@ from wx import EVT_LEFT_DOWN    as wxEVT_LEFT_DOWN
 from wx import EVT_MOTION       as wxEVT_MOTION
 from wx import EVT_LEFT_UP      as wxEVT_LEFT_UP
 from wx import EVT_LEAVE_WINDOW as wxEVT_LEAVE_WINDOW
+from wx import EVT_MOUSEWHEEL   as wxEVT_MOUSEWHEEL
 
 # wx event methods
 from wx import PostEvent as wxPostEvent
@@ -124,19 +125,46 @@ class vScroll(Control):
     def Start(self):
         # control locked to mouse motion
         self.lock = False
-        # get Panel
+        # default rotation
+        self.rotation = 30
         # setup scroll value boundaries
         self.extr = 0, 0
         # bind events
-        self.Bind(wxEVT_LEFT_DOWN,     self._LeftDown)
-        self.Bind(wxEVT_MOTION,        self._Motion)
-        self.Bind(wxEVT_LEFT_UP,       self._LeftUp)
-        self.Bind(wxEVT_LEAVE_WINDOW,  self._Leave)
+        self.Bind(wxEVT_LEFT_DOWN,      self._LeftDown)
+        self.Bind(wxEVT_MOTION,         self._Motion)
+        self.Bind(wxEVT_LEFT_UP,        self._LeftUp)
+        self.Bind(wxEVT_LEAVE_WINDOW,   self._Leave)
+        self.Bind(wxEVT_MOUSEWHEEL,     self._Wheel)
 
         # done
         return
 
-    # this 
+    def SetRotation(self, Value):
+        # +1 is forward one pixel
+        # -1 is backward one pixel
+        self.rotation = Value
+        return
+
+    def _Wheel(self, event):
+        # take no action if mouse locked
+        if self.lock: return
+        # get initial locations
+        P, Q = self.GetPosition()
+        # get wheel action
+        r = event.GetWheelRotation()
+        if r > 0: dQ = +self.rotation
+        if r < 0: dQ = -self.rotation
+        # compute new control position
+        p, q = P, Q + dQ
+        # get extrema
+        MIN, MAX = self.extr
+        # coerce to constraints
+        if q < MIN: q = MIN
+        if q > MAX: q = MAX
+        # set new control position
+        self.SetPosition((p, q))
+        return
+
     def SetFrameContainerHeight(self, height):
         # get self size
         w, h = self.GetSize()
