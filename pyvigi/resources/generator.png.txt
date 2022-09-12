@@ -1,39 +1,39 @@
-0, 0, 8, 4, 20, 30, 1, 3, digit, 0, normal
-0, 0, 8, 4, 20, 30, 2, 3, digit, 1, normal
-0, 0, 8, 4, 20, 30, 3, 3, digit, 2, normal
-0, 0, 8, 4, 20, 30, 4, 3, digit, 3, normal
-0, 0, 8, 4, 20, 30, 5, 3, digit, 4, normal
+0, 0, 8, 4, 10, 30, 1, 3, digit, 0, normal
+0, 0, 8, 4, 10, 30, 2, 3, digit, 1, normal
+0, 0, 8, 4, 10, 30, 3, 3, digit, 2, normal
+0, 0, 8, 4, 10, 30, 4, 3, digit, 3, normal
+0, 0, 8, 4, 10, 30, 5, 3, digit, 4, normal
 
-0, 0, 8, 4, 20, 30, 1, 4, digit, 5, normal
-0, 0, 8, 4, 20, 30, 2, 4, digit, 6, normal
-0, 0, 8, 4, 20, 30, 3, 4, digit, 7, normal
-0, 0, 8, 4, 20, 30, 4, 4, digit, 8, normal
-0, 0, 8, 4, 20, 30, 5, 4, digit, 9, normal
+0, 0, 8, 4, 10, 30, 1, 4, digit, 5, normal
+0, 0, 8, 4, 10, 30, 2, 4, digit, 6, normal
+0, 0, 8, 4, 10, 30, 3, 4, digit, 7, normal
+0, 0, 8, 4, 10, 30, 4, 4, digit, 8, normal
+0, 0, 8, 4, 10, 30, 5, 4, digit, 9, normal
 
-0, 0, 8, 4, 50, 34, 6, 3, unit, vrms, normal
-0, 0, 8, 4, 50, 34, 7, 3, unit, vpp, normal
+0, 0, 8, 4, 4, 30, 6, 1, symbol, normal, .
+0, 0, 8, 4, 10, 30, 7, 1, symbol, normal, + 
+0, 0, 8, 4, 10, 30, 8, 1, symbol, normal, -
 
-0, 0, 8, 4, 20, 30, 1, 1, digit, 0, hover
-1, 0, 8, 4, 20, 30, 2, 1, digit, 1, hover
-0, 0, 8, 4, 20, 30, 3, 1, digit, 2, hover
-0, 0, 8, 4, 20, 30, 4, 1, digit, 3, hover
-0, 0, 8, 4, 20, 30, 5, 1, digit, 4, hover
+0, 0, 8, 4, 10, 30, 1, 1, digit, 0, hover
+1, 0, 8, 4, 10, 30, 2, 1, digit, 1, hover
+0, 0, 8, 4, 10, 30, 3, 1, digit, 2, hover
+0, 0, 8, 4, 10, 30, 4, 1, digit, 3, hover
+0, 0, 8, 4, 10, 30, 5, 1, digit, 4, hover
 
-0, 0, 8, 4, 20, 30, 1, 2, digit, 5, hover
-0, 0, 8, 4, 20, 30, 2, 2, digit, 6, hover
-0, 0, 8, 4, 20, 30, 3, 2, digit, 7, hover
-0, 0, 8, 4, 20, 30, 4, 2, digit, 8, hover
-0, 0, 8, 4, 20, 30, 5, 2, digit, 9, hover
+0, 0, 8, 4, 10, 30, 1, 2, digit, 5, hover
+0, 0, 8, 4, 10, 30, 2, 2, digit, 6, hover
+0, 0, 8, 4, 10, 30, 3, 2, digit, 7, hover
+0, 0, 8, 4, 10, 30, 4, 2, digit, 8, hover
+0, 0, 8, 4, 10, 30, 5, 2, digit, 9, hover
 
-0, 0, 8, 4, 50, 34, 6, 4, unit, vrms, hover
-0, 0, 8, 4, 50, 34, 7, 4, unit, vpp, hover
+0, 0, 8, 4, 50, 34, 6, 2, unit, normal, hertz
+0, 0, 8, 4, 50, 34, 8, 2, unit, normal, degree
 
-0, 0, 8, 4, 50, 34, 6, 2, unit, hertz
-0, 0, 8, 4, 50, 34, 8, 2, unit, degree
+0, 0, 8, 4, 50, 34, 6, 3, unit, normal, vrms
+0, 0, 8, 4, 50, 34, 7, 3, unit, normal, vpp
 
-0, 0, 8, 4, 20, 30, 6, 1, dot
-0, 0, 8, 4, 20, 30, 7, 1, plus
-0, 0, 8, 4, 20, 30, 8, 1, minus
+0, 0, 8, 4, 50, 34, 6, 4, unit, hover, vrms
+0, 0, 8, 4, 50, 34, 7, 4, unit, hover, vpp
 
 # libraries definition file. One image per line
 # gives the image geometry and the images tags:

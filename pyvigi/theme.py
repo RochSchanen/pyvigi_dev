@@ -123,7 +123,7 @@ def _findpath(path):
 
 ############################################ COLLECT
 
-# collect a png list
+# collect data list from the .txt file
 def _findpngs(name, *args):
 
     # load the definition file
@@ -156,7 +156,9 @@ def _findpngs(name, *args):
         # record all parameters
         library.append((geometry, taglist))
 
-    # collect pngs using the taglist as filter
+    # collect pngs using the taglist as filter:
+    # images which tags list contains all of
+    # the arguments in args is added to the list  
     collection = []
     for i in library:
         geometry, taglist = i
@@ -188,32 +190,33 @@ def imageCollect(name, *args):
     if _DEBUG: print(f"filepath {fp}")
     if not fp: return None
 
-    # load bitmap file
+    # load the bitmap file
     bm = wxBitmap(fp, wxBITMAP_TYPE_PNG)
     if _DEBUG: print(f"bitmap {bm}")
 
-    # get image collection
+    # get image data from .txt file
     collection = _findpngs(name, *args)
     if _DEBUG: print(f"collection {collection}")
     if not collection: return None
 
+    # clip images from the bitmap file
+    # and add them to the collection
     images, taglists = [], []
-
     for geometry, taglist in collection:
 
         # get geometry
-        offset, grid, size, position = geometry
-        
+        offset, grid, size, position = geometry        
+
         # get parameters
         W, H = bm.GetSize()
         X, Y = offset
         p, q = grid
         w, h = size
-        m, n = position
-        
+        m, n = position                
+
         # compute grid size
         P, Q = W/p, H/q
-        
+
         # compute clipping origin
         x = (m-1)*P + (P-w)/2 + X
         y = (n-1)*Q + (Q-h)/2 + Y
@@ -225,10 +228,11 @@ def imageCollect(name, *args):
         images.append(bm.GetSubBitmap(Clip))
         taglists.append(taglist)
 
-    # one image in the list
+    # one image in the list: return a single image
     if len(images) == 1:
         return images[0]
 
+    # more than one image: return (image, tags) list
     subCollection = []
     # make image list
     for i, t in zip(images, taglists):
@@ -241,52 +245,61 @@ def imageCollect(name, *args):
 
 def imageSelect(collection, *args):
 
-    # possible optional arguments:
-    # None (all images are returned)
-    # tags (images returned are filtered)
-    # tags and a taglist (images are
-    # filtered and ordered using the
-    # taglist)
+    # to do: None => all images returned
+
+    # convert args to list
+    # for ease of data handling
+    args = list(args)
+
+    # grab last argument if it is a list
+    sortlist = None
+    if args:
+        if isinstance(args[-1], list):
+            sortlist = args.pop()
 
     subCollection = []
 
-    # filter images
+    # filter images collection
     for image, taglist in collection:
 
-        # the taglist object is to be
-        # left unchanged at the end of
-        # the function call
-        taglistCopy = taglist.copy()
-        
         valid = True
         for a in args:
-            if isinstance(a, list):
-                break
-            if a not in taglistCopy:
-                valid = False            
+            if a not in taglist:
+                valid = False
+
         if valid:
+            
+            # the taglist object must be
+            # left unchanged so that the
+            # collection object keeps its
+            # integrity
+            tagsublist = taglist.copy()
+
             for a in args:
-                if not isinstance(a, list):
-                    taglistCopy.remove(a)
-            subCollection.append((image, taglistCopy))
+                tagsublist.remove(a)
+
+            subCollection.append((image, tagsublist))
 
     images = []
 
-    # look for an ordered list
-    if args:
-        if isinstance(args[-1], list):
-            for a in args[-1]:
-                for i, t in subCollection:
-                    if a in t:
-                        images.append(i)
-            # done
-            return images
+    # return an image list in the
+    # order given by sortlist
+    if sortlist:
+        for a in sortlist:
+            for i, t in subCollection:
+                if a in t:
+                    images.append(i)
+        # done
+        return images
 
-    # return all images
+    # build image list
     for i, t in subCollection:
         images.append(i)
 
-    # done
+    # one image in the list: return a single image
+    if len(images) == 1:
+        return images[0]
+
     return images
 
 ############################################ TEST
@@ -311,12 +324,9 @@ if __name__ == "__main__":
 
         def Start(self):
             # collect images from "Panels.png"
-            IC = imageCollect("panels")
-            # select image list from the collection
-            # here we obtain a list of one image
-            IS = imageSelect(IC, "large")
+            img = imageCollect("panels", "large")
             # manually setup the background image of myapp
-            self.Panel.BackgroundBitmap = IS[0]
+            self.Panel.BackgroundBitmap = img
             # done
             return
     

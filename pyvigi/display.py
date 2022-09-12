@@ -31,6 +31,11 @@ from wx import BufferedPaintDC      as wxBufferedPaintDC
 from wx import EVT_ERASE_BACKGROUND as wxEVT_ERASE_BACKGROUND
 from wx import EVT_PAINT            as wxEVT_PAINT
 
+# from this package 
+from pyvigi.controls import Control
+
+################################################################# BITMAPCONTROL
+
 """
 
 The bitmap control is used to display an image
@@ -76,6 +81,7 @@ class bitmapControl(wxControl):
         elif isinstance(images, list):
             self.images = images
             self.names = names
+            # "names" may have the None value
 
         # dictionary of images with names
         else:
@@ -87,9 +93,14 @@ class bitmapControl(wxControl):
         # default value is zero: the first image
         self.status = 0
 
-        # get png size from first image
-        w, h = self.images[self.status].GetSize()
-        self.SetSize((w, h))
+        # get size from biggest images
+        W, H = 0, 0
+        for i in self.images:
+            w, h = i.GetSize()
+            W, H = max(W, w), max(H, h)
+
+        # set control size
+        self.SetSize((W, H))
 
         # bindings
         self.Bind(wxEVT_ERASE_BACKGROUND, self._onEraseBackground)
@@ -118,6 +129,67 @@ class bitmapControl(wxControl):
     def GetValue(self):
         return self.status
 
+###################################################### DIGITALFIXEDPOINTDISPLAY
+
+class digitalFixedPointDisplay(Control):
+
+    def __init__(
+        self, 
+        parent,         # parent
+        FORMAT,         # display format
+        imgs,           # digits and symbols images
+        names):         # digits and symbols names
+        
+        # call parent class __init__()
+        Control.__init__(
+            self,
+            parent = parent)
+        
+        # parameters
+        self.FORMAT = FORMAT                
+
+        # status is a list of image names,
+        # one name for each digit and the dot
+        self.status = list(f"{0:{FORMAT}}")
+        
+        # init
+        self.D, X, H = [], 0, 0
+        # instanciation loop
+        for i, s in enumerate(self.status):
+            print(i, s)
+            # create
+            d = bitmapControl(self, imgs, names)
+            # place
+            d.SetPosition((X, 0))
+            # set default value
+            d.SetValue(s)
+            # record into list
+            self.D.append(d)
+            # get current image
+            i = imgs[names.index(s)]
+            # get current size
+            w, h = i.GetSize()
+            # find maximum height
+            if H < h: H = h
+            # accumulate/inncrement position
+            X += w
+
+        # set control size
+        self.SetSize(X, H)
+
+        # done
+        return
+
+    def SetValue(self, value):
+        self.value = value
+        self.status = list(f"{value:{self.FORMAT}}")
+        for d, s in zip(self.D, self.status):
+            d.SetValue(s)
+        return            
+
+    def GetValue(self):
+        return self.value
+
 if __name__ == "__main__":
 
     from pyvigi.tools import header
@@ -134,78 +206,7 @@ if __name__ == "__main__":
     from pyvigi.theme import imageSelect
     from pyvigi.timer import timeloop
 
-    # ########################## TEST bitmapControl
-
-    # # derive a new class from app
-    # class myapp(app):
-
-    #     def Start(self):
-
-    #         # manually setup the background image of myapp
-    #         PANELS = imageCollect("panels")
-    #         self.Panel.BackgroundBitmap = imageSelect(PANELS, "medium")[0]
-
-    #         # add a led to the panel
-    #         LEDS = imageCollect("leds", "green")
-    #         self.b = bitmapControl(self.Panel, imageSelect(LEDS))
-    #         # set led position
-    #         # (small panel is 128x128)
-    #         w, h = self.b.GetSize()
-    #         self.b.SetPosition((int(256/2-w/2), int(256/2-h/2)))
-    #         # start blinking led
-    #         timeloop(self, self.update, 200)
-    #         # done
-    #         return
-
-    #     def update(self, event):
-    #         # inverse led state
-    #         self.b.SetValue(self.b.GetValue()^1)
-    #         return
-
-    # ########################## make DIGITAL display
-
-    from pyvigi.controls import Control
-
-    class digitalDisplayInteger(Control):
-
-        def __init__(self, parent, n):
-            # call parent class __init__()
-            control.__init__(self, parent)
-            # parameters
-            self.n = n
-            # status is the set of values for each digit
-            self.status = ['0']*n
-            # collect digit images
-            DIGITS = imageCollect("generator", "digit", "normal")
-            # get image size
-            w, h = imageSelect(DIGITS, "0").GetSize()
-            # define digit names
-            names = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
-            # instanciate digit set
-            D, X = [], 0
-            for i in range(n):
-                d = bitmapControl(self.Panel, imageSelect(DIGITS), names)
-                d.SetPosition((X, 0))
-                D.append(d)
-                X += w
-            # set control size
-            self.SetSize(X, h)
-            # done
-            return
-
-        def SetValue(self, value):
-            # build format
-            FORMAT = f"0{self.n}"
-            # build digit set
-            SET = list(f"{value:{FORMAT}}")
-            for d in self.D:
-                d.SetValue(SET[i])
-            
-
-        def Start(self):
-
-            # done
-            return
+    # ################################################################ TEST ALL
 
     # derive a new class from app
     class myapp(app):
@@ -213,21 +214,38 @@ if __name__ == "__main__":
         def Start(self):
 
             # manually setup the background image of myapp
-            PANELS = imageCollect("panels")
-            self.Panel.BackgroundBitmap = imageSelect(PANELS, "medium")[0]
+            self.Panel.BackgroundBitmap = imageCollect("panels", "large")
 
-            FORMAT, N = "03", 3
-            value = 145
-            vset = list(f"{value:{FORMAT}}")
-            DIGITS = imageCollect("generator", "digit", "normal")
-            names = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
-            D, X, x, y, w = [], 0, 50, 50, float(100)
-            for i in range(3):
-                d = bitmapControl(self.Panel, imageSelect(DIGITS), names)
-                d.SetPosition((x+X, y))
-                d.SetValue(vset[i])
-                D.append((d, w))
-                X += 14
+            # collect digit images
+            FIXEDPOINT = imageCollect("generator", "normal")
+            # build fixed point image names list
+            # required by the digitalFixedPointDisplay
+            names = ["0", "1", "2", "3", "4",
+                     "5", "6", "7", "8", "9",
+                     ".", "+", "-"]
+            # select the image list
+            images = imageSelect(FIXEDPOINT, names)
+            # instanciate the digital display
+            d = digitalFixedPointDisplay(self.Panel, "+06.2f", images, names)
+            d.SetPosition((30, 30))
+            d.SetValue(12.35)
+
+            # add a led to the panel
+            LEDS = imageCollect("leds", "green")
+            self.b = bitmapControl(self.Panel, imageSelect(LEDS))
+            # set led position
+            # (small panel is 128x128)
+            w, h = self.b.GetSize()
+            self.b.SetPosition((int(256/2-w/2), int(256/2-h/2)))
+            # start blinking led
+            timeloop(self, self.update, 200)
+            # done
+            return
+
+        def update(self, event):
+            # inverse led state
+            self.b.SetValue(self.b.GetValue()^1)
+            return
 
     # instanciate myapp
     m = myapp()

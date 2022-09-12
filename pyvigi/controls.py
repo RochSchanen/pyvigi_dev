@@ -146,6 +146,8 @@ class vScroll(Control):
         return
 
     def _Wheel(self, event):
+        # default
+        dQ = 0
         # take no action if mouse locked
         if self.lock: return
         # get initial locations
@@ -156,7 +158,7 @@ class vScroll(Control):
         if r < 0: dQ = -self.rotation
         # compute new control position
         p, q = P, Q + dQ
-        # get extrema
+        # get extrema         
         MIN, MAX = self.extr
         # coerce to constraints
         if q < MIN: q = MIN

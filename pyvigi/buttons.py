@@ -297,7 +297,7 @@ class Wheel(bitmapControl):
 
     def GetValue(self):
         return self.status % self.n
-6
+
     def Reset(self):
         self.status = self.reset
         # self.Refresh()
@@ -342,7 +342,7 @@ if __name__ == "__main__":
 
             # manually setup the background image of myapp
             PANELS = imageCollect("panels")
-            self.Panel.BackgroundBitmap = imageSelect(PANELS, "medium")[0]
+            self.Panel.BackgroundBitmap = imageSelect(PANELS, "medium")
             W, H = self.Panel.BackgroundBitmap.GetSize()
 
             SWITCHES = imageCollect("switches")
