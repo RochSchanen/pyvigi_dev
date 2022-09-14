@@ -43,6 +43,9 @@ from wx import EVT_MOUSEWHEEL   as wxEVT_MOUSEWHEEL
 from wx import PostEvent as wxPostEvent
 from wx.lib.newevent import NewEvent as wxNewEvent
 
+# Form this library
+from pyvigi.buttons import Wheel
+
 class Control(wxControl):
 
     def __init__(
@@ -221,6 +224,67 @@ class vScroll(Control):
     def _unlock(self, event):
         self.lock = False
         return
+
+class digitalFixedPointControl(Control):
+
+    def __init__(
+        self, 
+        parent,         # parent
+        FORMAT,         # display format
+        images,         # images (N images)
+        hover = None,   # images when hovering (N images)
+        names = None,   # id names for reference (N names)
+        ):  
+        
+        # call parent class __init__()
+        Control.__init__(
+            self,
+            parent = parent)
+        
+        # parameters
+        self.FORMAT = FORMAT                
+
+        # status is a list of image names,
+        # one name for each digit and the dot
+        self.status = list(f"{0:{FORMAT}}")
+        
+        # init
+        self.D, X, H = [], 0, 0
+        # instanciation loop
+        for i, s in enumerate(self.status):
+            print(i, s)
+            # create
+            W = Wheel(self, )
+            # place
+            d.SetPosition((X, 0))
+            # set default value
+            d.SetValue(s)
+            # record into list
+            self.D.append(d)
+            # get current image
+            i = imgs[names.index(s)]
+            # get current size
+            w, h = i.GetSize()
+            # find maximum height
+            if H < h: H = h
+            # accumulate/inncrement position
+            X += w
+
+        # set control size
+        self.SetSize(X, H)
+
+        # done
+        return
+
+    def SetValue(self, value):
+        self.value = value
+        self.status = list(f"{value:{self.FORMAT}}")
+        for d, s in zip(self.D, self.status):
+            d.SetValue(s)
+        return            
+
+    def GetValue(self):
+        return self.value
 
 if __name__ == "__main__":
 

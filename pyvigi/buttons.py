@@ -195,22 +195,20 @@ class Wheel(bitmapControl):
 
     def __init__(
         self,
-        parent,
-        images,
-        hover = None):
+        parent,         # parent control
+        images,         # images (N images)
+        hover = None,   # images when hovering (N images)
+        names = None,   # id names for reference (N or 2*N names)
+        ):
 
-        # concatenate hover images
-        if hover:
-            images += hover
-            self.hover = True
-        else:
-            self.hover = False
+        hoverEnable = not (hover is None)
+        if hoverEnable: images += hover
 
         bitmapControl.__init__(
             self,
             parent = parent,
             images = images,
-            names  = None)
+            names  = names)
         
         # LOCALS
         self.rotation = +1    # direction
@@ -220,7 +218,7 @@ class Wheel(bitmapControl):
         self.evt   = None     # event handler
         self.overflow = 0     # overflow flag
         self.n = len(images)  # full cycle number
-        if self.hover:        # subtract hover images
+        if self.hoverEnable:  # subtract hover images
             self.n >>= 1 
         
         # BINDINGS
