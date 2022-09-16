@@ -201,6 +201,7 @@ class Wheel(bitmapControl):
         names = None,   # id names for reference (N or 2*N names)
         ):
 
+        # append hover images to images list
         hoverEnable = not (hover is None)
         if hoverEnable: images += hover
 
@@ -217,8 +218,10 @@ class Wheel(bitmapControl):
         self.ctr   = None     # control parent
         self.evt   = None     # event handler
         self.overflow = 0     # overflow flag
-        self.n = len(images)  # full cycle number
-        if self.hoverEnable:  # subtract hover images
+
+        # number of non hover images
+        self.n = len(images)
+        if self.hoverEnable:
             self.n >>= 1 
         
         # BINDINGS
@@ -228,10 +231,9 @@ class Wheel(bitmapControl):
         return
 
     def _onMouseEnter(self, event):
-        # event.Skip() # unnecessary?
-        # safely upgrade to hover
+        # upgrade to hover (N to N-1)
         m = self.status % self.n
-        if self.hover: m += self.n
+        if self.hoverEnable: m += self.n
         # update state
         self.status = m
         # done
@@ -239,7 +241,7 @@ class Wheel(bitmapControl):
         return
 
     def _onMouseLeave(self, event):
-        # coerce to normal
+        # downgrade to normal (0 to N-1)
         m = self.status % self.n
         # update state
         self.status = m
@@ -248,10 +250,11 @@ class Wheel(bitmapControl):
         return
 
     def _onMouseWheel(self, event):
-        # save state if cancellation
+        # save state in case of reset
         self.reset = self.status
+        # set default
         self.overflow = 0
-        # coerce to normal
+        # downgrade to normal for arithmetics
         m = self.status % self.n
         # apply wheel action
         r = event.GetWheelRotation()
@@ -261,18 +264,15 @@ class Wheel(bitmapControl):
         # set overflow flag
         if m < 0       : self.overflow = -1
         if m > self.n-1: self.overflow = +1
-        # coerce (useful only when overflow)
+        # coerce in case of overflow
         m %= self.n
-        # upgrade to hover
-        if self.hover:
-            m += self.n
+        # upgrade back to hover
+        if self.hoverEnable: m += self.n
         # update state
         self.status = m
         # done
         self.SendEvent()
-        # the caller should send a "self.Refresh()"
-        # after evaluating the new state that should
-        # be given to the wheel.
+        # caller should send a "self.Refresh()" ?
         return
 
     def SetRotation(self, Value):
@@ -284,9 +284,8 @@ class Wheel(bitmapControl):
     def SetValue(self, Value):
         # get value
         m = int(Value)
-        # upgrade to hover
-        if self.status > self.n:
-            m += self.n
+        # check for hover status
+        if self.status > self.n: m += self.n
         # update
         self.status = m
         self.reset  = m
@@ -298,7 +297,7 @@ class Wheel(bitmapControl):
 
     def Reset(self):
         self.status = self.reset
-        # self.Refresh()
+        # self.Refresh() ?
         return
 
     # Bind the event to the parent handler
