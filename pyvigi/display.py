@@ -129,7 +129,7 @@ class bitmapControl(wxControl):
     def GetValue(self):
         return self.status
 
-###################################################### DIGITALFIXEDPOINTDISPLAY
+################################################### DIGITAL FIXED POINT DISPLAY
 
 class digitalFixedPointDisplay(Control):
 
@@ -156,9 +156,70 @@ class digitalFixedPointDisplay(Control):
         self.D, X, H = [], 0, 0
         # instanciation loop
         for i, s in enumerate(self.status):
-            print(i, s)
             # create
             d = bitmapControl(self, imgs, names)
+            # place
+            d.SetPosition((X, 0))
+            # set default value
+            d.SetValue(s)
+            # record into list
+            self.D.append(d)
+            # get current image
+            i = imgs[names.index(s)]
+            # get current size
+            w, h = i.GetSize()
+            # find maximum height
+            if H < h: H = h
+            # accumulate/inncrement position
+            X += w
+
+        # set control size
+        self.SetSize(X, H)
+
+        # done
+        return
+
+    def SetValue(self, value):
+        self.value = value
+        self.status = list(f"{value:{self.FORMAT}}")
+        for d, s in zip(self.D, self.status):
+            d.SetValue(s)
+        return            
+
+    def GetValue(self):
+        return self.value
+
+################################################### DIGITAL FIXED POINT CONTROL
+
+class digitalFixedPointControl(Control):
+
+    def __init__(
+        self, 
+        parent,         # parent
+        FORMAT,         # display format
+        images,         # images (N images)
+        hover = None,   # images when hovering (N images)
+        names = None,   # id names for reference (N or 2*N names)
+        ):  
+        
+        # call parent class __init__()
+        Control.__init__(
+            self,
+            parent = parent)
+        
+        # parameters
+        self.FORMAT = FORMAT                
+
+        # status is a list of image names,
+        # one name for each digit and the dot
+        self.status = list(f"{0:{FORMAT}}")
+        
+        # init
+        self.D, X, H = [], 0, 0
+        # instanciation loop
+        for i, s in enumerate(self.status):
+            # create
+            W = Wheel(self, )
             # place
             d.SetPosition((X, 0))
             # set default value
@@ -206,7 +267,7 @@ if __name__ == "__main__":
     from pyvigi.theme import imageSelect
     from pyvigi.timer import timeloop
 
-    # ################################################################ TEST ALL
+    ###################################################################### TEST
 
     # derive a new class from app
     class myapp(app):
@@ -227,7 +288,26 @@ if __name__ == "__main__":
             images = imageSelect(FIXEDPOINT, names)
             # instanciate the digital display
             d = digitalFixedPointDisplay(self.Panel, "+06.2f", images, names)
+            # fix position
             d.SetPosition((30, 30))
+            # set start up value
+            d.SetValue(12.35)
+
+            # collect digit images
+            GENERATOR = imageCollect("generator")
+            # build fixed point image names list
+            # required by the digitalFixedPointDisplay
+            names = ["0", "1", "2", "3", "4",
+                     "5", "6", "7", "8", "9",
+                     "."]
+            # select the image list
+            images = imageSelect(GENERATOR, "normal", names)
+            hover  = imageSelect(GENERATOR, "hover",  names)
+            # instanciate the digital control
+            d = digitalFixedPointDisplay(self.Panel, "+06.2f", images, names)
+            # fix position
+            d.SetPosition((30, 30))
+            # set start up value
             d.SetValue(12.35)
 
             # add a led to the panel

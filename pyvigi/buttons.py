@@ -202,8 +202,8 @@ class Wheel(bitmapControl):
         ):
 
         # append hover images to images list
-        hoverEnable = not (hover is None)
-        if hoverEnable: images += hover
+        self.hoverEnable = not (hover is None)
+        if self.hoverEnable: images += hover
 
         bitmapControl.__init__(
             self,
@@ -338,8 +338,7 @@ if __name__ == "__main__":
         def Start(self):
 
             # manually setup the background image of myapp
-            PANELS = imageCollect("panels")
-            self.Panel.BackgroundBitmap = imageSelect(PANELS, "medium")
+            self.Panel.BackgroundBitmap = imageCollect("panels", "medium")
             W, H = self.Panel.BackgroundBitmap.GetSize()
 
             SWITCHES = imageCollect("switches")
